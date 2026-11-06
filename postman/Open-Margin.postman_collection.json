@@ -1,0 +1,800 @@
+{
+  "info": {
+    "name": "Open Margin",
+    "description": "Open Margin API at http://localhost:1000. Start the server with `npm run dev` inside nodeapp, then import this collection.\n\nEach body only shows the fields. Type your own values before sending. Sign up stays form-data because the avatar is a file. Login, forgot password, and reset password are raw JSON.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:1000"
+    }
+  ],
+  "item": [
+    {
+      "name": "Welcome",
+      "item": [
+        {
+          "name": "GET /api/health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/health"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Sign up",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "firstName", "value": "", "type": "text" },
+                { "key": "lastName", "value": "", "type": "text" },
+                { "key": "email", "value": "", "type": "text" },
+                { "key": "password", "value": "", "type": "text" },
+                { "key": "avatar", "type": "file", "src": "" }
+              ]
+            },
+            "url": "{{baseUrl}}/api/auth/signup",
+            "description": "Fill firstName, lastName, email, and password. Set avatar to File and choose your profile image. Password must be 8 to 72 characters. Avatar must be JPEG, PNG, or WebP, up to 2 MB."
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"\",\n  \"password\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/auth/login",
+            "description": "Fill email and password. Copy the token from the response when a later request needs Authorization: Bearer <token>."
+          }
+        },
+        {
+          "name": "Forgot password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/auth/forgot-password",
+            "description": "Fill the email you signed up with. Copy data.resetCode from the response into Reset password."
+          }
+        },
+        {
+          "name": "Reset password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"\",\n  \"code\": \"\",\n  \"newPassword\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/auth/reset-password",
+            "description": "Fill email, the 6-digit code from Forgot password, and the new password (8 to 72 characters)."
+          }
+        },
+        {
+          "name": "Get my profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer "
+              }
+            ],
+            "url": "{{baseUrl}}/api/auth/me",
+            "description": "Paste the token from Login after \"Bearer \". Returns the logged-in user. A blocked account gets 403."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Update my profile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer "
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "firstName", "value": "", "type": "text" },
+                { "key": "lastName", "value": "", "type": "text" },
+                { "key": "bio", "value": "", "type": "text" },
+                { "key": "avatar", "type": "file", "src": "" }
+              ]
+            },
+            "url": "{{baseUrl}}/api/users/me",
+            "description": "Paste the token from Login after \"Bearer \". Send only the fields you want to change and untick the rest. Bio is up to 280 characters. A new avatar replaces the old one (JPEG, PNG, or WebP, up to 2 MB)."
+          }
+        },
+        {
+          "name": "Get author profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", ":id"],
+              "variable": [{ "key": "id", "value": "" }]
+            },
+            "description": "The public author page. Fill the user id in Params. Returns name, bio, avatar, join date, published post count, and total likes. For their posts, use List published posts with author set to the same id."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "description": "Anyone can list and read categories. Create, update, and delete need an admin token. To make your account an admin, run `npm run make-admin -- your@email.com` inside nodeapp. To add City, Food, Craft, and Field Notes, run `npm run seed:categories`.",
+      "item": [
+        {
+          "name": "List categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/categories",
+            "description": "Returns every category sorted by name."
+          }
+        },
+        {
+          "name": "Get category by slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/categories/:slug",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "categories", ":slug"],
+              "variable": [{ "key": "slug", "value": "" }]
+            },
+            "description": "Fill the slug in Params, for example food or field-notes."
+          }
+        },
+        {
+          "name": "Create category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer "
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"\",\n  \"description\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/categories",
+            "description": "Admin only. Paste an admin token after \"Bearer \". Name is required (up to 40 characters) and must be new, ignoring case. Description is optional (up to 200 characters). The slug is made from the name."
+          }
+        },
+        {
+          "name": "Update category",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer "
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"\",\n  \"description\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/categories/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "categories", ":id"],
+              "variable": [{ "key": "id", "value": "" }]
+            },
+            "description": "Admin only. Fill the category id in Params. Send only the fields you want to change and remove the rest. Renaming also changes the slug."
+          }
+        },
+        {
+          "name": "Delete category",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer "
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/categories/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "categories", ":id"],
+              "variable": [{ "key": "id", "value": "" }]
+            },
+            "description": "Admin only. Fill the category id in Params."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tags",
+      "item": [
+        {
+          "name": "List tags",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/tags?search=",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tags"],
+              "query": [{ "key": "search", "value": "", "disabled": true }]
+            },
+            "description": "Returns up to 100 tags sorted by name. Tick search and type the start of a name to filter, for example kig. Tags are created when posts are saved."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Posts",
+      "description": "Writing a post: Create draft, then Upload cover image, then Publish. Use Update post to change it at any time. Requests with Authorization need a token from Login. Anyone can use List published posts and Get published post. The `:id` and `:slug` values go in each request's Params tab.",
+      "item": [
+        {
+          "name": "List published posts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/posts?search=&category=&tag=&author=&sort=newest&page=1&limit=12",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "posts"],
+              "query": [
+                { "key": "search", "value": "", "disabled": true },
+                { "key": "category", "value": "", "disabled": true },
+                { "key": "tag", "value": "", "disabled": true },
+                { "key": "author", "value": "", "disabled": true },
+                { "key": "sort", "value": "newest", "disabled": true },
+                { "key": "page", "value": "1", "disabled": true },
+                { "key": "limit", "value": "12", "disabled": true }
+              ]
+            },
+            "description": "Homepage, category page, search results, and author profile all use this. Tick the filters you want: search matches whole words in the title, summary, and body; category and tag take a slug (food, daily-life); author takes a user id; sort is newest or oldest; limit is 1 to 50. The list leaves out the body."
+          }
+        },
+        {
+          "name": "Get published post",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/posts/:slug",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "posts", ":slug"],
+              "variable": [{ "key": "slug", "value": "" }]
+            },
+            "description": "The post page. Fill the slug in Params. Drafts return 404 here; use Get my post for those."
+          }
+        },
+        {
+          "name": "Create draft",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer "
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"\",\n  \"excerpt\": \"\",\n  \"body\": \"\",\n  \"category\": \"\",\n  \"tags\": []\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/posts",
+            "description": "Saves a new draft. Only title is required (up to 150 characters). excerpt is the summary (up to 300). category is a category id from List categories. tags is a list of up to 5 names, e.g. [\"Kigali\", \"food\"]; new names become new tags. Copy data.post.id for the next requests."
+          }
+        },
+        {
+          "name": "Update post",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer "
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"\",\n  \"excerpt\": \"\",\n  \"body\": \"\",\n  \"category\": \"\",\n  \"tags\": []\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/posts/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "posts", ":id"],
+              "variable": [{ "key": "id", "value": "" }]
+            },
+            "description": "Your own posts only. Fill the post id in Params. Send only the fields you want to change and remove the rest. Sending \"tags\": [] removes all tags. A draft's slug follows its title; a published post keeps its slug."
+          }
+        },
+        {
+          "name": "Upload cover image",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer "
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [{ "key": "cover", "type": "file", "src": "" }]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/posts/:id/cover",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "posts", ":id", "cover"],
+              "variable": [{ "key": "id", "value": "" }]
+            },
+            "description": "Your own posts only. Fill the post id in Params and choose an image in the cover field (JPEG, PNG, or WebP, up to 5 MB). A new cover replaces the old one."
+          }
+        },
+        {
+          "name": "Publish post",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer "
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/posts/:id/publish",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "posts", ":id", "publish"],
+              "variable": [{ "key": "id", "value": "" }]
+            },
+            "description": "Your own posts only. Fill the post id in Params. The post needs a title, a body, and a category first."
+          }
+        },
+        {
+          "name": "Unpublish post",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer "
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/posts/:id/unpublish",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "posts", ":id", "unpublish"],
+              "variable": [{ "key": "id", "value": "" }]
+            },
+            "description": "Your own posts only. Moves a published post back to drafts, so it leaves the public site."
+          }
+        },
+        {
+          "name": "List my posts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer "
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/posts/mine?status=&page=1&limit=12",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "posts", "mine"],
+              "query": [
+                { "key": "status", "value": "", "disabled": true },
+                { "key": "page", "value": "1", "disabled": true },
+                { "key": "limit", "value": "12", "disabled": true }
+              ]
+            },
+            "description": "The My posts page: your drafts and published posts, most recently edited first. Tick status and set draft or published to filter."
+          }
+        },
+        {
+          "name": "Get my post",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer "
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/posts/mine/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "posts", "mine", ":id"],
+              "variable": [{ "key": "id", "value": "" }]
+            },
+            "description": "Loads one of your posts with its body, draft or published, for the editor. Fill the post id in Params."
+          }
+        },
+        {
+          "name": "Delete post",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer "
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/posts/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "posts", ":id"],
+              "variable": [{ "key": "id", "value": "" }]
+            },
+            "description": "Your own posts, or any post with an admin token. Fill the post id in Params. Also removes the cover image."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Likes",
+      "description": "Likes work on published posts only. Fill the post id in Params and paste a token from Login.",
+      "item": [
+        {
+          "name": "Like or unlike post",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer "
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/posts/:id/like",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "posts", ":id", "like"],
+              "variable": [{ "key": "id", "value": "" }]
+            },
+            "description": "Likes the post, or removes your like if you already liked it. Returns liked and the new likeCount."
+          }
+        },
+        {
+          "name": "Check my like",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer "
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/posts/:id/like",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "posts", ":id", "like"],
+              "variable": [{ "key": "id", "value": "" }]
+            },
+            "description": "Returns whether you have liked the post, and its likeCount. The post page uses this to fill the heart."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Comments",
+      "description": "Comments work on published posts only. The `:id` in Params is the post id, except in Delete comment where it is the comment id.",
+      "item": [
+        {
+          "name": "List comments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/posts/:id/comments?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "posts", ":id", "comments"],
+              "query": [
+                { "key": "page", "value": "1", "disabled": true },
+                { "key": "limit", "value": "20", "disabled": true }
+              ],
+              "variable": [{ "key": "id", "value": "" }]
+            },
+            "description": "Anyone can read comments. Oldest first, 20 per page by default (up to 100)."
+          }
+        },
+        {
+          "name": "Add comment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer "
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"body\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/posts/:id/comments",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "posts", ":id", "comments"],
+              "variable": [{ "key": "id", "value": "" }]
+            },
+            "description": "Fill the post id in Params and write the comment in body (up to 1000 characters). Blocked accounts get 403."
+          }
+        },
+        {
+          "name": "Delete comment",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer "
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/comments/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "comments", ":id"],
+              "variable": [{ "key": "id", "value": "" }]
+            },
+            "description": "Fill the comment id in Params. Works for the comment's author, or any comment with an admin token."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reports",
+      "item": [
+        {
+          "name": "Report post or comment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer "
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"targetType\": \"\",\n  \"targetId\": \"\",\n  \"reason\": \"\",\n  \"details\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/reports",
+            "description": "targetType is post or comment. targetId is the post id or comment id. reason is one of: spam (Spam or advertising), harassment (Harassment or hate), misleading (False or misleading), sexual_violent (Sexual or violent content), other (Other). details is optional, up to 500 characters. You cannot report your own content or report the same thing twice while it is open."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "description": "Every request here needs an admin token. To make your account an admin, run `npm run make-admin -- your@email.com` inside nodeapp, then log in again.",
+      "item": [
+        {
+          "name": "List reports",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer "
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/reports?status=open&page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "reports"],
+              "query": [
+                { "key": "status", "value": "open" },
+                { "key": "page", "value": "1", "disabled": true },
+                { "key": "limit", "value": "20", "disabled": true }
+              ]
+            },
+            "description": "status is open, resolved, or all (open by default). Newest first. counts gives the numbers for the Open, Resolved, and All tabs."
+          }
+        },
+        {
+          "name": "Resolve report",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer "
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"removeContent\": false,\n  \"blockUser\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/reports/:id/resolve",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "reports", ":id", "resolve"],
+              "variable": [{ "key": "id", "value": "" }]
+            },
+            "description": "Fill the report id in Params. removeContent deletes the reported post or comment (other open reports about it close too). blockUser blocks whoever wrote it. Leave both false to resolve with no action."
+          }
+        },
+        {
+          "name": "List users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer "
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users?search=&status=&page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users"],
+              "query": [
+                { "key": "search", "value": "", "disabled": true },
+                { "key": "status", "value": "", "disabled": true },
+                { "key": "page", "value": "1", "disabled": true },
+                { "key": "limit", "value": "20", "disabled": true }
+              ]
+            },
+            "description": "Every account with role, published post count, and blocked status. Tick search to match part of a name or email. Tick status and set active or blocked to filter."
+          }
+        },
+        {
+          "name": "Block user",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer "
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users/:id/block",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users", ":id", "block"],
+              "variable": [{ "key": "id", "value": "" }]
+            },
+            "description": "Fill the user id in Params. A blocked user can still read, but cannot log in, post, comment, or like. Admins cannot be blocked."
+          }
+        },
+        {
+          "name": "Unblock user",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer "
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users/:id/unblock",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users", ":id", "unblock"],
+              "variable": [{ "key": "id", "value": "" }]
+            },
+            "description": "Fill the user id in Params."
+          }
+        }
+      ]
+    }
+  ]
+}

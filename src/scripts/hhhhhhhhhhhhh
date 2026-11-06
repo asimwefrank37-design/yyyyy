@@ -1,0 +1,8 @@
+git status	Checks changed files
+git branch	Shows branches
+git branch -a	Shows all branches
+git checkout branch-name	Switches branches
+git pull	Gets the latest changes
+git add .	Stages changes
+git commit -m "message"	Saves changes
+git push	Uploads changes

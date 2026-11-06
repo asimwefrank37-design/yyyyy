@@ -1,0 +1,42 @@
+{
+  "name": "blog-platform-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Community blog API. This folder currently holds the AI writing assistant.",
+  "main": "src/server.ts",
+  "scripts": {
+    "dev": "nodemon --exec ts-node src/server.ts",
+    "start": "ts-node --transpile-only src/server.ts",
+    "test:ai": "ts-node --transpile-only src/scripts/test-ai-drafts.ts",
+    "make-admin": "ts-node --transpile-only src/scripts/make-admin.ts",
+    "seed:categories": "ts-node --transpile-only src/scripts/seed-categories.ts",
+    "seed:sample": "ts-node --transpile-only src/scripts/seed-sample.ts"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "type": "commonjs",
+  "nodemonConfig": {
+    "ignore": ["scripts/**", "dist/**"]
+  },
+  "dependencies": {
+    "@sendgrid/mail": "^8.1.6",
+    "bcrypt": "^6.0.0",
+    "cloudinary": "^2.11.0",
+    "dotenv": "^18.0.4",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.10.3",
+    "multer": "^2.5.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.3.0",
+    "@types/node": "^26.6.3",
+    "nodemon": "^3.1.14"
+  }
+}
